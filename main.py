@@ -28,7 +28,18 @@ def write_marker(title: str):
         f.write(f"{datetime.now().strftime('%Y-%m-%d %H:%M')}\n{title}")
 
 
+def reset():
+    write_marker("(수동 리셋)")
+    sys.stdout.buffer.write(
+        f"리셋 완료: 다음 /save부터 현재 시점 이후 대화만 저장됩니다.\n".encode("utf-8")
+    )
+
+
 def main():
+    if len(sys.argv) > 1 and sys.argv[1] == "--reset":
+        reset()
+        return
+
     # 환경 변수 확인
     if not os.environ.get("NOTION_API_KEY"):
         err(".env 파일이 없거나 NOTION_API_KEY가 설정되지 않았습니다. .env.example을 참고해 생성해주세요.")
