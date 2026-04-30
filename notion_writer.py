@@ -100,6 +100,13 @@ def create_page(title: str, one_line_summary: str, topics: list, sections: list,
         properties={
             "title": {"title": [{"type": "text", "text": {"content": title}}]}
         },
-        children=children,
+        children=children[:100],
     )
+
+    for i in range(100, len(children), 100):
+        notion.blocks.children.append(
+            block_id=response["id"],
+            children=children[i:i + 100],
+        )
+
     return response["url"]
