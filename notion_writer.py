@@ -33,16 +33,12 @@ def create_page(title: str, one_line_summary: str, topics: list, sections: list,
     # 다룬 주제 목록
     children.append({
         "type": "heading_2",
-        "heading_2": {
-            "rich_text": [{"type": "text", "text": {"content": "다룬 주제"}}]
-        },
+        "heading_2": {"rich_text": [{"type": "text", "text": {"content": "다룬 주제"}}]},
     })
     for topic in topics:
         children.append({
             "type": "bulleted_list_item",
-            "bulleted_list_item": {
-                "rich_text": [{"type": "text", "text": {"content": topic}}]
-            },
+            "bulleted_list_item": {"rich_text": [{"type": "text", "text": {"content": topic}}]},
         })
 
     children.append({"type": "divider", "divider": {}})
@@ -50,23 +46,28 @@ def create_page(title: str, one_line_summary: str, topics: list, sections: list,
     # 정리 섹션
     children.append({
         "type": "heading_2",
-        "heading_2": {
-            "rich_text": [{"type": "text", "text": {"content": "정리"}}]
-        },
+        "heading_2": {"rich_text": [{"type": "text", "text": {"content": "정리"}}]},
     })
+
     for section in sections:
+        # 주제 heading
         children.append({
             "type": "heading_3",
-            "heading_3": {
-                "rich_text": [{"type": "text", "text": {"content": section["heading"]}}]
-            },
+            "heading_3": {"rich_text": [{"type": "text", "text": {"content": section["heading"]}}]},
         })
+        # 한 줄 개요
         children.append({
             "type": "paragraph",
             "paragraph": {
-                "rich_text": [{"type": "text", "text": {"content": section["content"]}}]
+                "rich_text": [{"type": "text", "text": {"content": section["overview"]}}]
             },
         })
+        # 핵심 bullet points
+        for point in section["points"]:
+            children.append({
+                "type": "bulleted_list_item",
+                "bulleted_list_item": {"rich_text": [{"type": "text", "text": {"content": point}}]},
+            })
 
     children.append({"type": "divider", "divider": {}})
 
@@ -74,15 +75,11 @@ def create_page(title: str, one_line_summary: str, topics: list, sections: list,
     children += [
         {
             "type": "heading_2",
-            "heading_2": {
-                "rich_text": [{"type": "text", "text": {"content": "결론"}}]
-            },
+            "heading_2": {"rich_text": [{"type": "text", "text": {"content": "결론"}}]},
         },
         {
             "type": "paragraph",
-            "paragraph": {
-                "rich_text": [{"type": "text", "text": {"content": conclusion}}]
-            },
+            "paragraph": {"rich_text": [{"type": "text", "text": {"content": conclusion}}]},
         },
     ]
 
@@ -90,16 +87,12 @@ def create_page(title: str, one_line_summary: str, topics: list, sections: list,
     if next_steps:
         children.append({
             "type": "heading_2",
-            "heading_2": {
-                "rich_text": [{"type": "text", "text": {"content": "다음 단계"}}]
-            },
+            "heading_2": {"rich_text": [{"type": "text", "text": {"content": "다음 단계"}}]},
         })
         for step in next_steps:
             children.append({
                 "type": "bulleted_list_item",
-                "bulleted_list_item": {
-                    "rich_text": [{"type": "text", "text": {"content": step}}]
-                },
+                "bulleted_list_item": {"rich_text": [{"type": "text", "text": {"content": step}}]},
             })
 
     response = notion.pages.create(
