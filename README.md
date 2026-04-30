@@ -8,7 +8,7 @@ Claude Code 대화를 `/save` 명령어 한 번으로 Notion 페이지에 자동
 |------|------|
 | 트리거 | `/save` 명령어 입력 시 |
 | 저장 범위 | 현재 대화 전체 |
-| 저장 형식 | 제목 / 날짜 / 요약 / 주요 질문 / 결론 |
+| 저장 형식 | 제목 / 날짜 / 한줄 요약 / 다룬 주제 / 정리 / 결론 / 다음 단계 |
 | 기술 스택 | Python + Notion API |
 
 ## 파일 구조
@@ -90,14 +90,21 @@ NOTION_PAGE_ID=your_page_id_here
 
 1. 대화 내용을 바탕으로 아래 JSON을 작성하세요:
    - title: 대화 핵심 주제 (간결하게, 한 줄)
-   - summary: 대화에서 다룬 내용 요약 (3~5문장)
-   - questions: 사용자가 질문했거나 다룬 주요 질문 목록 (배열)
-   - conclusion: 결론 및 결정된 사항
+   - one_line_summary: 전체 대화를 한 문장으로 요약
+   - topics: 대화에서 다룬 주제 목록 (짧게, 배열)
+   - sections: 각 주제별 정리
+     - heading: 주제명
+     - overview: 이 주제에서 무슨 일이 있었는지 한 문장 개요
+     - points: 핵심 사항을 짧고 명확하게 bullet 형태로
+   - conclusion: 대화를 통해 결정되거나 확인된 사항
+   - next_steps: 다음에 할 일 목록 (없으면 빈 배열)
 
 2. 아래 명령어를 실행하여 Notion에 저장하세요 (JSON을 실제 내용으로 채워서):
 
 ```bash
-echo '{"title":"...", "summary":"...", "questions":["...","..."], "conclusion":"..."}' | python /path/to/claude-notion-sync/main.py
+python /path/to/claude-notion-sync/main.py << 'ENDJSON'
+{"title":"...", "one_line_summary":"...", "topics":["..."], "sections":[{"heading":"...","overview":"...","points":["...","..."]}], "conclusion":"...", "next_steps":["..."]}
+ENDJSON
 ```
 
 저장 완료 후 Notion 페이지 URL을 알려주세요.
@@ -114,17 +121,38 @@ Claude Code 대화 중 언제든지 입력:
 Claude가 자동으로 대화를 분석하고 Notion에 아래 형식으로 저장합니다.
 
 ```
-📅 2026-04-30
+날짜: 2026-04-30
+한줄 요약: 전체 대화를 한 문장으로 요약
 
-## 요약
-대화에서 다룬 내용...
+────────────────────
 
-## 주요 질문
-• 질문 1
-• 질문 2
+## 다룬 주제
+• 주제 1
+• 주제 2
+
+────────────────────
+
+## 정리
+
+### 주제 1
+한 문장 개요
+
+• 핵심 포인트 1
+• 핵심 포인트 2
+
+### 주제 2
+한 문장 개요
+
+• 핵심 포인트 1
+• 핵심 포인트 2
+
+────────────────────
 
 ## 결론
-결론 및 결정된 사항...
+결론 및 결정된 사항
+
+## 다음 단계
+• 다음에 할 일
 ```
 
 ## 의존 패키지
