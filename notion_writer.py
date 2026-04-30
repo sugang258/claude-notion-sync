@@ -3,12 +3,15 @@ from datetime import datetime
 from notion_client import Client
 
 
-def create_page(title: str, summary: str, questions: list, conclusion: str) -> str:
+def create_page(title: str, one_line_summary: str, topics: list, sections: list, conclusion: str, next_steps: list) -> str:
     notion = Client(auth=os.environ["NOTION_API_KEY"])
     parent_id = os.environ["NOTION_PAGE_ID"]
     today = datetime.now().strftime("%Y-%m-%d")
 
-    children = [
+    children = []
+
+    # 날짜 + 한줄 요약
+    children += [
         {
             "type": "paragraph",
             "paragraph": {
@@ -16,33 +19,58 @@ def create_page(title: str, summary: str, questions: list, conclusion: str) -> s
             },
         },
         {
-            "type": "heading_2",
-            "heading_2": {
-                "rich_text": [{"type": "text", "text": {"content": "요약"}}]
-            },
-        },
-        {
             "type": "paragraph",
             "paragraph": {
-                "rich_text": [{"type": "text", "text": {"content": summary}}]
+                "rich_text": [
+                    {"type": "text", "text": {"content": "한줄 요약: "}, "annotations": {"bold": True}},
+                    {"type": "text", "text": {"content": one_line_summary}},
+                ]
             },
         },
-        {
-            "type": "heading_2",
-            "heading_2": {
-                "rich_text": [{"type": "text", "text": {"content": "주요 질문"}}]
-            },
-        },
+        {"type": "divider", "divider": {}},
     ]
 
-    for q in questions:
+    # 다룬 주제 목록
+    children.append({
+        "type": "heading_2",
+        "heading_2": {
+            "rich_text": [{"type": "text", "text": {"content": "다룬 주제"}}]
+        },
+    })
+    for topic in topics:
         children.append({
             "type": "bulleted_list_item",
             "bulleted_list_item": {
-                "rich_text": [{"type": "text", "text": {"content": q}}]
+                "rich_text": [{"type": "text", "text": {"content": topic}}]
             },
         })
 
+    children.append({"type": "divider", "divider": {}})
+
+    # 정리 섹션
+    children.append({
+        "type": "heading_2",
+        "heading_2": {
+            "rich_text": [{"type": "text", "text": {"content": "정리"}}]
+        },
+    })
+    for section in sections:
+        children.append({
+            "type": "heading_3",
+            "heading_3": {
+                "rich_text": [{"type": "text", "text": {"content": section["heading"]}}]
+            },
+        })
+        children.append({
+            "type": "paragraph",
+            "paragraph": {
+                "rich_text": [{"type": "text", "text": {"content": section["content"]}}]
+            },
+        })
+
+    children.append({"type": "divider", "divider": {}})
+
+    # 결론
     children += [
         {
             "type": "heading_2",
@@ -57,6 +85,22 @@ def create_page(title: str, summary: str, questions: list, conclusion: str) -> s
             },
         },
     ]
+
+    # 다음 단계
+    if next_steps:
+        children.append({
+            "type": "heading_2",
+            "heading_2": {
+                "rich_text": [{"type": "text", "text": {"content": "다음 단계"}}]
+            },
+        })
+        for step in next_steps:
+            children.append({
+                "type": "bulleted_list_item",
+                "bulleted_list_item": {
+                    "rich_text": [{"type": "text", "text": {"content": step}}]
+                },
+            })
 
     response = notion.pages.create(
         parent={"type": "page_id", "page_id": parent_id},
