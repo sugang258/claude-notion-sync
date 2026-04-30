@@ -33,7 +33,7 @@ def create_page(title: str, one_line_summary: str, topics: list, sections: list,
     # 다룬 주제 목록
     children.append({
         "type": "heading_2",
-        "heading_2": {"rich_text": [{"type": "text", "text": {"content": "다룬 주제"}}]},
+        "heading_2": {"rich_text": [{"type": "text", "text": {"content": "\U0001f4cb 다룬 주제"}}]},
     })
     for topic in topics:
         children.append({
@@ -46,7 +46,7 @@ def create_page(title: str, one_line_summary: str, topics: list, sections: list,
     # 정리 섹션
     children.append({
         "type": "heading_2",
-        "heading_2": {"rich_text": [{"type": "text", "text": {"content": "정리"}}]},
+        "heading_2": {"rich_text": [{"type": "text", "text": {"content": "\U0001f5c2 정리"}}]},
     })
 
     for section in sections:
@@ -75,7 +75,7 @@ def create_page(title: str, one_line_summary: str, topics: list, sections: list,
     children += [
         {
             "type": "heading_2",
-            "heading_2": {"rich_text": [{"type": "text", "text": {"content": "결론"}}]},
+            "heading_2": {"rich_text": [{"type": "text", "text": {"content": "✅ 결론"}}]},
         },
         {
             "type": "paragraph",
@@ -87,7 +87,7 @@ def create_page(title: str, one_line_summary: str, topics: list, sections: list,
     if next_steps:
         children.append({
             "type": "heading_2",
-            "heading_2": {"rich_text": [{"type": "text", "text": {"content": "다음 단계"}}]},
+            "heading_2": {"rich_text": [{"type": "text", "text": {"content": "👉 다음 단계"}}]},
         })
         for step in next_steps:
             children.append({
