@@ -12,7 +12,7 @@ def create_page(title: str, summary: str, questions: list, conclusion: str) -> s
         {
             "type": "paragraph",
             "paragraph": {
-                "rich_text": [{"type": "text", "text": {"content": f"📅 {today}"}}]
+                "rich_text": [{"type": "text", "text": {"content": f"날짜: {today}"}}]
             },
         },
         {
