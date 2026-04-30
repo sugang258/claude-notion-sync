@@ -6,7 +6,7 @@ Claude Code 대화를 `/save` 명령어 한 번으로 Notion 페이지에 자동
 
 | 항목 | 내용 |
 |------|------|
-| 트리거 | `/save` 명령어 입력 시 |
+| 트리거 | `/save` 또는 `/reset-save` 명령어 입력 시 |
 | 저장 범위 | 마지막 저장 이후 ~ 현재 대화 (첫 저장 시 전체) |
 | 저장 형식 | 제목 / 날짜·시간 / 한줄 요약 / 다룬 주제 / 정리 / 결론 / 다음 단계 |
 | 기술 스택 | Python + Notion API |
@@ -23,7 +23,8 @@ claude-notion-sync/
 └── last_save_marker.txt   # 마지막 저장 시점 기록 (자동 생성, git 제외)
 
 ~/.claude/commands/
-└── save.md                # /save 슬래시 커맨드 정의 (전역)
+├── save.md                # /save 슬래시 커맨드 정의 (전역)
+└── reset-save.md          # /reset-save 슬래시 커맨드 정의 (전역)
 ```
 
 ## 동작 흐름
@@ -86,7 +87,9 @@ NOTION_API_KEY=secret_xxx...
 NOTION_PAGE_ID=your_page_id_here
 ```
 
-### 6. `/save` 슬래시 커맨드 등록
+### 6. 슬래시 커맨드 등록
+
+#### `/save` 커맨드
 
 `~/.claude/commands/save.md` 파일을 생성하고 아래 내용을 작성합니다.
 
@@ -104,7 +107,19 @@ NOTION_PAGE_ID=your_page_id_here
    - `next_steps`: 다음 할 일 (없으면 빈 배열)
 3. `python main.py << 'ENDJSON' ... ENDJSON` 으로 저장 실행
 
+#### `/reset-save` 커맨드
+
+`~/.claude/commands/reset-save.md` 파일을 생성하고 아래 내용을 작성합니다.
+
+파일 내용 요약:
+
+1. `python main.py --reset` 실행
+2. Notion에는 아무것도 저장하지 않고 현재 시점을 저장 기준점으로만 설정
+3. 다음 `/save`부터 이 시점 이후 대화만 저장됨
+
 ## 사용 방법
+
+### `/save`
 
 Claude Code 대화 중 언제든지 입력:
 
@@ -118,6 +133,16 @@ Claude Code 대화 중 언제든지 입력:
 [마지막 저장] 2026-04-30 10:35 — 이전 대화 제목
 Notion 저장 완료: https://...
 ```
+
+### `/reset-save`
+
+현재 대화 시점을 저장 기준점으로 설정합니다. Notion에는 아무것도 저장되지 않습니다.
+
+```
+/reset-save
+```
+
+활용 예시: 이전 대화는 기록하고 싶지 않고 지금부터 새롭게 저장을 시작하고 싶을 때 사용합니다. 다음 `/save`부터 이 시점 이후 대화만 Notion에 저장됩니다.
 
 Notion에 생성되는 페이지 형식:
 
