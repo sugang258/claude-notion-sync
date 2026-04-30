@@ -6,7 +6,7 @@ from notion_client import Client
 def create_page(title: str, one_line_summary: str, topics: list, sections: list, conclusion: str, next_steps: list) -> str:
     notion = Client(auth=os.environ["NOTION_API_KEY"])
     parent_id = os.environ["NOTION_PAGE_ID"]
-    today = datetime.now().strftime("%Y-%m-%d")
+    today = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     children = []
 
