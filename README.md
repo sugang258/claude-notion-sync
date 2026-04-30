@@ -88,43 +88,21 @@ NOTION_PAGE_ID=your_page_id_here
 
 ### 6. `/save` 슬래시 커맨드 등록
 
-`~/.claude/commands/save.md` 파일 생성:
+`~/.claude/commands/save.md` 파일을 생성하고 아래 내용을 작성합니다.
 
-```markdown
-지금까지의 대화를 분석하여 Notion에 저장하세요.
+파일 내용 요약:
 
-다음 단계를 순서대로 실행하세요:
-
-1. 먼저 마지막 저장 시점을 확인하세요:
-
-```bash
-cat /path/to/claude-notion-sync/last_save_marker.txt
-```
-
-   - 파일이 존재하면: 출력된 제목에 해당하는 대화 시점 이후의 내용만 분석하세요
-   - 파일이 없으면 (첫 저장): 전체 대화를 분석하세요
-
-2. 분석 범위의 대화 내용을 바탕으로 아래 JSON을 작성하세요:
-   - title: 대화 핵심 주제 (간결하게, 한 줄, 앞에 어울리는 이모지 포함)
-   - one_line_summary: 해당 범위 대화를 한 문장으로 요약
-   - topics: 해당 범위에서 다룬 주제 목록 (짧게, 배열)
-   - sections: 각 주제별 정리
-     - heading: 주제명 (앞에 내용에 어울리는 이모지 포함)
-     - overview: 이 주제에서 무슨 일이 있었는지 한 문장 개요
-     - points: 핵심 사항을 짧고 명확하게 bullet 형태로
-   - conclusion: 해당 범위 대화에서 결정되거나 확인된 사항
-   - next_steps: 다음에 할 일 목록 (없으면 빈 배열)
-
-3. 아래 명령어를 실행하여 Notion에 저장하세요:
-
-```bash
-python /path/to/claude-notion-sync/main.py << 'ENDJSON'
-{"title":"...", "one_line_summary":"...", "topics":["..."], "sections":[{"heading":"...","overview":"...","points":["...","..."]}], "conclusion":"...", "next_steps":["..."]}
-ENDJSON
-```
-
-저장 완료 후 Notion 페이지 URL을 알려주세요.
-```
+1. `cat last_save_marker.txt` 로 마지막 저장 시점 확인
+   - 파일 있으면 → 해당 시점 이후 대화만 분석
+   - 파일 없으면 → 전체 대화 분석 (첫 저장)
+2. 아래 JSON 구조로 대화 내용 정리
+   - `title`: 핵심 주제 + 이모지
+   - `one_line_summary`: 한 문장 요약
+   - `topics`: 다룬 주제 목록
+   - `sections`: 주제별 `heading`(이모지 포함) + `overview` + `points`
+   - `conclusion`: 결론
+   - `next_steps`: 다음 할 일 (없으면 빈 배열)
+3. `python main.py << 'ENDJSON' ... ENDJSON` 으로 저장 실행
 
 ## 사용 방법
 
@@ -174,16 +152,16 @@ Notion에 생성되는 페이지 형식:
 
 ## 에러 메시지
 
-오류 발생 시 원인을 알 수 있는 메시지가 출력됩니다:
+오류 발생 시 원인을 알 수 있는 한국어 메시지가 출력됩니다.
 
-| 상황 | 출력 메시지 |
-|------|------------|
-| `.env` 파일 없음 또는 API 키 미설정 | `오류: .env 파일이 없거나 NOTION_API_KEY가 설정되지 않았습니다.` |
-| PAGE_ID 미설정 | `오류: NOTION_PAGE_ID가 설정되지 않았습니다.` |
-| JSON 형식 오류 | `오류: JSON 형식이 잘못됐습니다.` |
-| API 키 유효하지 않음 (401) | `오류: Notion API 키가 유효하지 않습니다.` |
-| Integration 미연동 (403) | `오류: 페이지 접근 권한이 없습니다. Integration 연동을 확인해주세요.` |
-| 페이지 없음 (404) | `오류: Notion 페이지를 찾을 수 없습니다. NOTION_PAGE_ID를 확인해주세요.` |
+| 상황 | 원인 |
+|------|------|
+| `.env` 없음 또는 `NOTION_API_KEY` 미설정 | `.env.example` 참고하여 `.env` 생성 |
+| `NOTION_PAGE_ID` 미설정 | `.env` 파일 확인 |
+| JSON 형식 오류 | Claude가 생성한 JSON 구조 확인 |
+| 401 Unauthorized | `NOTION_API_KEY` 값 확인 |
+| 403 Forbidden | Notion 페이지에 Integration 연동 여부 확인 |
+| 404 Not Found | `NOTION_PAGE_ID` 값 확인 |
 
 ## 의존 패키지
 
